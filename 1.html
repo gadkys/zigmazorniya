@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0">
+<title>ZIGMA - ZORNIYA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Unbounded:wght@500;800&display=swap">
+<style>
+/* Layout: wordmark masthead, one featured latest video, then a search bar, category chips and a video grid. Dark-first. */
+:root {
+  --bg: #0d0c14;
+  --surface: #16141f;
+  --line: #2a2738;
+  --fg: #efedf8;
+  --muted: #9a96b0;
+  --accent: #8f7dff;
+  --accent-ink: #0d0c14;
+  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f4fb; --surface: #ffffff; --line: #dcd9ea; --fg: #17151f;
+    --muted: #5f5b75; --accent: #5b46e6; --accent-ink: #ffffff; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f5f4fb; --surface: #ffffff; --line: #dcd9ea; --fg: #17151f;
+  --muted: #5f5b75; --accent: #5b46e6; --accent-ink: #ffffff; color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 16px/1.55 var(--font-body);
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 44px; }
+
+/* masthead */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--accent); color: var(--accent-ink);
+  font: 700 14px/1 var(--font-body);
+  padding: 12px 18px; border-radius: 999px; text-decoration: none;
+}
+.btn:hover { filter: brightness(1.1); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+h1 {
+  margin: 36px 0 0;
+  font: 800 clamp(20px, 6.4vw, 80px)/1.05 var(--font-display);
+  white-space: nowrap;
+  letter-spacing: -.03em;
+  text-wrap: balance;
+}
+h1 .dash { display: inline; color: var(--accent); }
+.lead { margin: 18px 0 0; max-width: 52ch; color: var(--muted); font-size: 18px; }
+
+/* thumbnails are generated, so no external image hosts are needed */
+.thumb {
+  --h: 260;
+  position: relative; aspect-ratio: 16 / 9; width: 100%; overflow: hidden;
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 90% at 85% 10%, hsl(var(--h) 80% 55% / .75), transparent 60%),
+    linear-gradient(135deg, hsl(calc(var(--h) + 40) 55% 22%), hsl(var(--h) 60% 12%));
+}
+.thumb .play {
+  position: absolute; inset: 0; margin: auto; width: 56px; height: 56px; border-radius: 50%;
+  background: rgb(255 255 255 / .92); display: grid; place-items: center;
+}
+.thumb .play::after {
+  content: ""; border-left: 16px solid #14121c; border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent; margin-left: 4px;
+}
+.thumb .len {
+  position: absolute; right: 10px; bottom: 10px; font-size: 12px; font-weight: 700;
+  background: rgb(0 0 0 / .65); color: #fff; padding: 2px 8px; border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* featured */
+.featured { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; align-items: center; text-decoration: none; color: inherit; }
+.featured .meta { min-width: 0; }
+.kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.featured h2 { margin: 10px 0 10px; font: 500 clamp(22px, 3.4vw, 34px)/1.15 var(--font-display); text-wrap: balance; }
+.featured p { margin: 0; color: var(--muted); }
+@media (max-width: 760px) { .featured { grid-template-columns: 1fr; } }
+
+/* list */
+.bar { display: grid; gap: 18px; border-top: 1px solid var(--line); padding-top: 24px; }
+.bar-row { display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.bar h3 { margin: 0; font: 500 20px/1.2 var(--font-display); }
+.count { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.search {
+  background: var(--surface); color: var(--fg); border: 1px solid var(--line);
+  border-radius: 999px; padding: 11px 16px; font: 400 15px var(--font-body); width: min(100%, 280px);
+}
+.search::placeholder { color: var(--muted); }
+.chips { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip {
+  background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 999px;
+  font: 700 14px var(--font-body); padding: 8px 14px; cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 28px 20px; margin-top: 24px; }
+.card { display: grid; gap: 12px; text-decoration: none; color: inherit; align-content: start; min-width: 0; }
+a.card:hover .thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card h4 { margin: 0; font: 700 16px/1.3 var(--font-body); text-wrap: balance; }
+.card .sub { color: var(--muted); font-size: 13px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.pill { color: var(--accent); font-weight: 700; }
+.soon { color: var(--accent); font-weight: 700; }
+.empty { color: var(--muted); padding: 40px 0; }
+
+footer { border-top: 1px solid var(--line); padding-top: 20px; color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .thumb { transition: outline-color .15s; }
+  a.card:hover .play, a.featured:hover .play { transform: scale(1.06); }
+  .play { transition: transform .15s; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="top">
+      <span class="tag">Мемы и смешные воспоминания</span>
+      <a class="btn" id="discord" href="#" hidden target="_blank" rel="noopener">Зайти в Дискорд</a>
+    </div>
+    <h1>ZIGMA <span class="dash">-</span> ZORNIYA</h1>
+    <p class="lead">Мемы, фейлы и смешные моменты с нашего Дискорд канала. Смотри, ржи и пересматривай. Новые видео выкладывает только автор.</p>
+  </header>
+
+  <main id="main" style="display:grid;gap:44px"></main>
+
+  <footer>
+    <span>© ZIGMA - ZORNIYA</span>
+    <span>Видео добавляет только автор</span>
+  </footer>
+</div>
+
+<script>
+/* ---- Настройки автора. Только он меняет этот список, через правку сайта. ---- */
+var DISCORD_URL = "https://discord.gg/3Gvgkn9am";   // ссылка-приглашение на сервер; пока пусто, кнопка скрыта
+
+// cat: Мемы, Фейлы, Приколы, Воспоминания. url: ссылка на видео (YouTube и т.п.).
+// Пока ссылки нет, карточка помечена «ссылка скоро».
+var VIDEOS = [
+  { title: "Пример: тот самый момент, который все помнят", cat: "Воспоминания", date: "2026-11-12", len: "12:34", note: "Это заготовка. Название, дату и ссылку заменит автор.", url: "", hue: 262 },
+  { title: "Пример: нарезка самых смешных фейлов", cat: "Фейлы", date: "2026-11-05", len: "8:02", url: "", hue: 310 },
+  { title: "Пример: мемы недели с канала", cat: "Мемы", date: "2026-10-28", len: "6:15", url: "", hue: 200 },
+  { title: "Пример: приколы со стрима", cat: "Приколы", date: "2026-10-19", len: "5:41", url: "", hue: 20 },
+  { title: "Пример: старые воспоминания сервера", cat: "Воспоминания", date: "2026-10-07", len: "23:55", url: "", hue: 150 },
+  { title: "Пример: лучшие фейлы месяца", cat: "Фейлы", date: "2026-09-30", len: "3:20", url: "", hue: 340 }
+];
+var CATS = ["Все", "Мемы", "Фейлы", "Приколы", "Воспоминания"];
+
+(function () {
+  var main = document.getElementById("main");
+  var btn = document.getElementById("discord");
+  if (DISCORD_URL) { btn.href = DISCORD_URL; btn.hidden = false; }
+
+  function fmt(d) {
+    try { return new Date(d + "T12:00:00").toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }); }
+    catch (e) { return d; }
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function thumb(v) {
+    var t = el("div", "thumb");
+    t.style.setProperty("--h", v.hue || 260);
+    t.appendChild(el("div", "play"));
+    if (v.len) t.appendChild(el("span", "len", v.len));
+    return t;
+  }
+  function wrapper(v, cls) {
+    var a = v.url ? el("a", cls) : el("div", cls);
+    if (v.url) { a.href = v.url; a.target = "_blank"; a.rel = "noopener"; }
+    return a;
+  }
+
+  var first = VIDEOS[0];
+  var feat = wrapper(first, "featured");
+  feat.appendChild(thumb(first));
+  var meta = el("div", "meta");
+  meta.appendChild(el("div", "kicker", "Новое видео"));
+  meta.appendChild(el("h2", null, first.title));
+  meta.appendChild(el("p", null, (first.note ? first.note + " " : "") + fmt(first.date)));
+  if (!first.url) meta.appendChild(el("p", "soon", "Ссылка скоро появится"));
+  feat.appendChild(meta);
+  main.appendChild(feat);
+
+  var section = el("section");
+  var bar = el("div", "bar");
+  var row = el("div", "bar-row");
+  var left = el("div");
+  left.appendChild(el("h3", null, "Все видео"));
+  var count = el("div", "count");
+  left.appendChild(count);
+  row.appendChild(left);
+  var search = el("input", "search");
+  search.type = "search"; search.id = "search"; search.placeholder = "Поиск по названию";
+  search.setAttribute("aria-label", "Поиск по названию");
+  row.appendChild(search);
+  bar.appendChild(row);
+
+  var cat = "Все";
+  var chips = el("div", "chips");
+  var chipEls = CATS.map(function (c, i) {
+    var b = el("button", "chip", c);
+    b.type = "button"; b.id = "chip-" + i;
+    b.setAttribute("aria-pressed", c === cat ? "true" : "false");
+    b.addEventListener("click", function () {
+      cat = c;
+      chipEls.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      draw();
+    });
+    chips.appendChild(b);
+    return b;
+  });
+  bar.appendChild(chips);
+  section.appendChild(bar);
+  var grid = el("div", "grid");
+  section.appendChild(grid);
+  main.appendChild(section);
+
+  function draw() {
+    var q = search.value.trim().toLowerCase();
+    grid.textContent = "";
+    var list = VIDEOS.filter(function (v) {
+      return (cat === "Все" || v.cat === cat) && (!q || v.title.toLowerCase().indexOf(q) !== -1);
+    });
+    count.textContent = "Найдено: " + list.length;
+    if (!list.length) { grid.appendChild(el("div", "empty", "Тут пока пусто. Попробуй другое слово или раздел.")); return; }
+    list.forEach(function (v) {
+      var c = wrapper(v, "card");
+      c.appendChild(thumb(v));
+      c.appendChild(el("h4", null, v.title));
+      var sub = el("div", "sub");
+      if (v.cat) sub.appendChild(el("span", "pill", v.cat));
+      sub.appendChild(el("span", null, fmt(v.date)));
+      if (!v.url) sub.appendChild(el("span", "soon", "ссылка скоро"));
+      c.appendChild(sub);
+      grid.appendChild(c);
+    });
+  }
+  search.addEventListener("input", draw);
+  draw();
+})();
+</script>
+
+</body></html>
